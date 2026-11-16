@@ -85,7 +85,7 @@
   <main>
     <aside id="chrome-banner" class="chrome-banner" hidden>
       <p>Chrome에서 열면 바로 설치됩니다</p>
-      <a id="chrome-open" class="chrome-open" href="intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F;end">Chrome에서 열기</a>
+      <a id="chrome-open" class="chrome-open" href="intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end">Chrome에서 열기</a>
     </aside>
     <header>
       <img class="app-icon" src="icons/icon-192.png" width="88" height="88" alt="현대위아 HSE 앱 아이콘">
@@ -139,6 +139,12 @@
       return {isIOS, isAndroid, isChrome, isSafari, isInApp, isSamsung};
     }
     const {isIOS, isAndroid, isChrome, isSafari} = detectBrowser(navigator.userAgent, navigator.maxTouchPoints);
+    // Chrome이 아닌 안드로이드 브라우저로 열리면 Chrome으로 자동 전환 시도.
+    // Chrome이 없어 되돌아온 경우(?nochrome=1)에는 반복하지 않고 현재 브라우저로 설치를 안내.
+    const noChrome = /[?&]nochrome=1/.test(location.search);
+    if (isAndroid && !isChrome && !noChrome) {
+      location.replace('intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end');
+    }
     let installWaiting = false;
     let installBusy = false;
     let waitTimer = null;
@@ -151,7 +157,7 @@
     const copyButton = document.getElementById('copy-button');
     const chromeBanner = document.getElementById('chrome-banner');
     const safariPointer = document.getElementById('safari-pointer');
-    const fallback = 'Chrome 메뉴(⋮) → “앱 설치”를 선택하세요. 메뉴에 “홈 화면에 추가”가 표시되면 해당 항목을 선택하세요.';
+    const fallback = '브라우저 메뉴(⋮ 또는 ≡) → “앱 설치”를 선택하세요. 메뉴에 “홈 화면에 추가”가 표시되면 해당 항목을 선택하세요.';
 
     function resetButton() {
       button.disabled = false;
@@ -171,7 +177,7 @@
     }
 
     async function showFallback(attempt) {
-      if (isAndroid && !isChrome) {
+      if (isAndroid && !isChrome && !noChrome) {
         chromeBanner.hidden = false;
         status.textContent = 'Chrome에서 열기 버튼을 누른 뒤 앱 설치를 눌러주세요.';
         return;
@@ -265,7 +271,7 @@
       status.textContent = isSafari ? '버튼을 누르면 홈 화면 추가 방법이 열립니다.' : '버튼을 누르면 Safari에서 설치하는 방법이 열립니다.';
     } else {
       status.textContent = isAndroid ? '버튼을 눌러 홈 화면에 추가하세요.' : '버튼을 눌러 설치하세요. 휴대폰에서도 이 주소를 열어 설치할 수 있습니다.';
-      chromeBanner.hidden = !(isAndroid && !isChrome);
+      chromeBanner.hidden = !(isAndroid && !isChrome && !noChrome);
     }
     if (window.__appInstalled) showInstalled();
 
