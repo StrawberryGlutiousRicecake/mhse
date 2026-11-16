@@ -21,7 +21,7 @@
         window.__swRegistrationError = error.message;
       });
     }
-    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true || /[?&]go=1/.test(location.search)) {
       location.replace('launch.html');
     }
   </script>
@@ -51,6 +51,9 @@
     .chrome-banner { margin-bottom: 22px; padding: 14px; border-radius: 14px; background: #edf4fc; }
     .chrome-banner p { margin: 0 0 10px; font-weight: 700; }
     .chrome-banner .chrome-tip { font-weight: 400; font-size: 13px; color: #586c81; line-height: 1.5; }
+    .alt-guide { margin: 14px 0 0; padding: 14px; border-radius: 14px; background: #eef7ee; font-size: 14px; line-height: 1.5; }
+    .alt-guide p { margin: 0 0 6px; }
+    .alt-guide ol { margin: 0 0 6px; padding-left: 20px; }
     .chrome-copy { margin-top: 10px; background: #fff; color: #12365b; border: 1px solid #12365b; font-size: 14px; }
     .chrome-open { display: block; padding: 16px 12px; border-radius: 12px; background: #12365b; color: #fff; text-align: center; text-decoration: none; font-weight: 700; }
     .hint, .status { font-size: 13px; }
@@ -115,6 +118,15 @@
       <p class="intro">홈 화면에 추가하고<br>아이콘 한 번으로 바로 접속하세요.</p>
     </header>
     <button id="install-button" type="button">앱 설치</button>
+    <aside id="alt-guide" class="alt-guide" hidden>
+      <p><strong>이 브라우저(삼성 인터넷 등)에서 바로 추가하기</strong></p>
+      <ol>
+        <li>화면 하단의 <strong>메뉴(≡)</strong>를 탭하세요.</li>
+        <li><strong>“현재 페이지 추가”</strong>를 탭하세요.</li>
+        <li><strong>“홈 화면”</strong>을 탭한 뒤 <strong>추가</strong>를 누르세요.</li>
+      </ol>
+      <p class="chrome-tip">홈 화면의 “현대위아 HSE” 아이콘을 누르면 바로 접속됩니다.</p>
+    </aside>
     <p id="install-status" class="hint" role="status" aria-live="polite">기기에 맞는 설치 방법을 안내합니다.</p>
     <noscript><p>Android: Chrome 메뉴(⋮) → 앱 설치/홈 화면에 추가.<br>iPhone / iPad: Safari → 하단 ··· → 공유 → 더보기 → 홈 화면에 추가 → 추가. 앱 이름은 현대위아 HSE입니다.</p></noscript>
     <footer><a href="https://mhse.wia.co.kr/">설치 없이 바로 접속</a></footer>
@@ -161,7 +173,7 @@
       const isSafari = isIOS && /Safari/i.test(ua) && /Version\//i.test(ua) && !isInApp && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
       return {isIOS, isAndroid, isChrome, isSafari, isInApp, isSamsung};
     }
-    const {isIOS, isAndroid, isChrome, isSafari} = detectBrowser(navigator.userAgent, navigator.maxTouchPoints);
+    const {isIOS, isAndroid, isChrome, isSafari, isInApp} = detectBrowser(navigator.userAgent, navigator.maxTouchPoints);
     // Chrome이 아닌 안드로이드 브라우저에서는 버튼(사용자 탭)으로만 Chrome 전환. 자동 전환은 URL 없이 Chrome만 열리는 문제가 있어 제거.
     // Chrome이 없어 되돌아온 경우(?nochrome=1)에는 반복하지 않고 현재 브라우저로 설치를 안내.
     const noChrome = /[?&]nochrome=1/.test(location.search);
@@ -293,11 +305,23 @@
     } else {
       status.textContent = isAndroid ? (noChrome ? '설치 중 “안전하지 않은 앱 차단됨”이 나오면 “무시하고 설치하기”를 눌러주세요.' : '버튼을 눌러 홈 화면에 추가하세요.') : '버튼을 눌러 설치하세요. 휴대폰에서도 이 주소를 열어 설치할 수 있습니다.';
       chromeBanner.hidden = !(isAndroid && !isChrome && !noChrome);
+      if (isAndroid && !isChrome && !isInApp) {
+        // 홈 화면 바로가기는 '현재 주소'로 만들어지므로, 추가 시점 주소를 ?go=1 로 바꿔 두면 아이콘 실행 시 mhse로 바로 이동한다.
+        document.getElementById('alt-guide').hidden = false;
+        try { history.replaceState(null, '', location.pathname + '?go=1'); } catch {}
+      }
     }
     if (window.__appInstalled) showInstalled();
 
     button.addEventListener('click', () => {
       if (isIOS) { openSheet(); return; }
+      if (isAndroid && !isChrome && !isInApp) {
+        const guide = document.getElementById('alt-guide');
+        guide.hidden = false;
+        guide.scrollIntoView({behavior: 'smooth', block: 'center'});
+        status.textContent = '아래 순서대로 메뉴에서 홈 화면에 추가하세요.';
+        return;
+      }
       if (isAndroid && !isChrome && !noChrome) { copyUrlSilently(); location.href = CHROME_INTENT; return; }
       if (window.__appInstalled) { showInstalled(); return; }
       if (installBusy) return;
