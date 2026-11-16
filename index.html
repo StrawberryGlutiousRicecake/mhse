@@ -50,6 +50,7 @@
     button:disabled { cursor: wait; opacity: .75; }
     .chrome-banner { margin-bottom: 22px; padding: 14px; border-radius: 14px; background: #edf4fc; }
     .chrome-banner p { margin: 0 0 10px; font-weight: 700; }
+    .chrome-copy { margin-top: 10px; background: #fff; color: #12365b; border: 1px solid #12365b; font-size: 14px; }
     .chrome-open { display: block; padding: 16px 12px; border-radius: 12px; background: #12365b; color: #fff; text-align: center; text-decoration: none; font-weight: 700; }
     .hint, .status { font-size: 13px; }
     .status { overflow-wrap: anywhere; }
@@ -103,6 +104,8 @@
     <aside id="chrome-banner" class="chrome-banner" hidden>
       <p>Chrome에서 열면 바로 설치됩니다</p>
       <a id="chrome-open" class="chrome-open" href="intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end">Chrome에서 열기</a>
+      <button id="chrome-copy" type="button" class="chrome-copy">주소 복사 → Chrome 주소창에 붙여넣기</button>
+      <p id="chrome-copy-status" class="status" role="status"></p>
     </aside>
     <header>
       <img class="app-icon" src="icons/icon-192.png" width="88" height="88" alt="현대위아 HSE 앱 아이콘">
@@ -157,13 +160,10 @@
       return {isIOS, isAndroid, isChrome, isSafari, isInApp, isSamsung};
     }
     const {isIOS, isAndroid, isChrome, isSafari} = detectBrowser(navigator.userAgent, navigator.maxTouchPoints);
-    // Chrome이 아닌 안드로이드 브라우저로 열리면 Chrome으로 자동 전환 시도.
+    // Chrome이 아닌 안드로이드 브라우저에서는 버튼(사용자 탭)으로만 Chrome 전환. 자동 전환은 URL 없이 Chrome만 열리는 문제가 있어 제거.
     // Chrome이 없어 되돌아온 경우(?nochrome=1)에는 반복하지 않고 현재 브라우저로 설치를 안내.
     const noChrome = /[?&]nochrome=1/.test(location.search);
     const CHROME_INTENT = 'intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end';
-    if (isAndroid && !isChrome && !noChrome) {
-      location.replace(CHROME_INTENT);
-    }
     let installWaiting = false;
     let installBusy = false;
     let waitTimer = null;
@@ -198,7 +198,7 @@
     async function showFallback(attempt) {
       if (isAndroid && !isChrome && !noChrome) {
         chromeBanner.hidden = false;
-        status.textContent = 'Chrome에서 열기 버튼을 누른 뒤 앱 설치를 눌러주세요.';
+        status.textContent = 'Chrome에서 열기 버튼을 누르세요. Chrome에 페이지가 안 뜨면 주소를 복사해 Chrome 주소창에 붙여넣으세요.';
         return;
       }
       if (navigator.getInstalledRelatedApps) {
@@ -325,6 +325,19 @@
       } else if (!event.shiftKey && document.activeElement === last) {
         event.preventDefault(); closeButton.focus();
       }
+    });
+
+    document.getElementById('chrome-copy').addEventListener('click', async () => {
+      const out = document.getElementById('chrome-copy-status');
+      const url = location.origin + location.pathname;
+      let copied = false;
+      try { await navigator.clipboard.writeText(url); copied = true; } catch {
+        const t = document.createElement('textarea'); t.value = url; t.style.position = 'fixed'; t.style.opacity = '0';
+        document.body.appendChild(t); t.select();
+        try { copied = document.execCommand('copy'); } catch {}
+        t.remove();
+      }
+      out.textContent = copied ? '주소를 복사했어요. Chrome을 열어 주소창에 붙여넣으세요.' : '주소를 길게 눌러 복사하세요: ' + url;
     });
 
     copyButton.addEventListener('click', async () => {
