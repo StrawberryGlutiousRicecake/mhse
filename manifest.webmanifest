@@ -1,11 +1,15 @@
 {
-  "id": "./",
+  "id": "mhse/",
   "name": "현대위아 HSE",
   "short_name": "현대위아 HSE",
   "lang": "ko",
   "start_url": "launch.html",
   "scope": "./",
   "display": "standalone",
+  "prefer_related_applications": false,
+  "related_applications": [
+    {"platform": "webapp", "url": "manifest.webmanifest"}
+  ],
   "theme_color": "#FFFFFF",
   "background_color": "#FFFFFF",
   "icons": [
