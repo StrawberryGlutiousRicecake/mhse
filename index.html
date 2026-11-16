@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12365b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MHSE">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <title>MHSE · 홈 화면에 추가</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; color: #172b42; background: #f2f5f9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); }
+    main { width: 100%; max-width: 420px; background: #fff; padding: 32px 26px 24px; border-radius: 26px; box-shadow: 0 12px 44px #12365b0d; }
+    header { text-align: center; }
+    .app-icon { width: 80px; height: 80px; border-radius: 20px; }
+    .eyebrow { color: #586c81; font-size: 12px; letter-spacing: .12em; margin: 18px 0 8px; }
+    h1 { font-size: 25px; margin: 0 0 12px; letter-spacing: -.06em; }
+    p { font-size: 15px; line-height: 1.7; margin: 10px 0; }
+    .intro { color: #586c81; }
+    section { margin-top: 26px; }
+    h2 { font-size: 17px; margin: 0 0 12px; }
+    button, .primary { display: block; width: 100%; border: 0; border-radius: 12px; padding: 15px 12px; background: #12365b; color: #fff; font: inherit; font-weight: 700; text-align: center; cursor: pointer; text-decoration: none; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #4588d2; outline-offset: 4px; }
+    .steps { padding-left: 23px; font-size: 15px; line-height: 1.8; margin: 10px 0; }
+    .steps li { padding-left: 4px; margin: 8px 0; }
+    .hint { color: #586c81; font-size: 13px; }
+    .notice { background: #fff5df; color: #684919; border-radius: 12px; padding: 14px; margin-bottom: 18px; }
+    .notice button { margin-top: 12px; background: #fff; color: #684919; border: 1px solid #dacba9; }
+    .status { font-size: 13px; color: #586c81; overflow-wrap: anywhere; }
+    footer { margin-top: 26px; padding-top: 20px; border-top: 1px solid #e8edf3; text-align: center; }
+    a { color: #12365b; text-underline-offset: 4px; }
+    footer a { font-size: 14px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 360px) { main { padding: 24px 20px; } h1 { font-size: 23px; } }
+  </style>
+  <script>
+    let installPrompt = null;
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      const hint = document.getElementById('android-hint');
+      if (hint) hint.textContent = '버튼을 누르면 설치 창이 열립니다.';
+    });
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+      location.replace('launch.html');
+    }
+  </script>
+</head>
+<body>
+  <main>
+    <header>
+      <img class="app-icon" src="icons/icon-192.png" width="80" height="80" alt="MHSE 앱 아이콘">
+      <p class="eyebrow">MOBILE HSE</p>
+      <h1>MHSE를 홈 화면에 추가</h1>
+      <p class="intro">홈 화면의 아이콘을 눌러<br>모바일 HSE에 바로 접속하세요.</p>
+    </header>
+
+    <section id="android" hidden aria-labelledby="android-title">
+      <h2 id="android-title">Android 설치 안내</h2>
+      <button id="install-button" type="button">앱 설치</button>
+      <p id="android-hint" class="hint" aria-live="polite">설치 창이 열리지 않으면 Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요. 이미 설치했다면 홈 화면의 MHSE 아이콘을 눌러주세요.</p>
+    </section>
+
+    <section id="ios" hidden aria-labelledby="ios-title">
+      <h2 id="ios-title">iPhone / iPad 설치 안내</h2>
+      <div id="safari-warning" class="notice" hidden>
+        <p><strong>Safari로 열어주세요.</strong><br>아래 버튼으로 주소를 복사한 뒤 Safari 주소창에 붙여넣으세요.</p>
+        <button id="copy-button" type="button">현재 URL 복사</button>
+        <p id="copy-status" class="status" role="status"></p>
+      </div>
+      <ol class="steps">
+        <li>Safari에서 <strong>공유 버튼</strong> (네모 위 화살표)을 누르세요.</li>
+        <li><strong>홈 화면에 추가</strong>를 선택하세요.</li>
+        <li>이름이 <strong>MHSE</strong>인지 확인하고 <strong>추가</strong>를 누르세요.</li>
+      </ol>
+      <p class="hint">메뉴가 보이지 않으면 공유 메뉴를 아래로 스크롤하세요.</p>
+    </section>
+
+    <section id="desktop" hidden aria-labelledby="desktop-title">
+      <h2 id="desktop-title">휴대폰에서 설치하세요</h2>
+      <p class="intro">휴대폰 카메라로 설치 안내 QR을 찍으면 기기에 맞는 설치 방법을 안내합니다.</p>
+      <a class="primary" href="https://mhse.wia.co.kr/">바로 접속</a>
+    </section>
+
+    <noscript><p>Android: Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가). iPhone / iPad: Safari → 공유 버튼 → 홈 화면에 추가 → 이름을 MHSE로 지정하세요.</p></noscript>
+    <footer><a href="https://mhse.wia.co.kr/">설치 없이 바로 접속</a></footer>
+  </main>
+  <script>
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 0);
+    const isAndroid = /Android/i.test(ua);
+    const isSafari = /Safari/i.test(ua) && /Version\//i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA|FBAN|FBAV|Instagram|KAKAOTALK|NAVER|Line\//i.test(ua);
+    document.getElementById(isIOS ? 'ios' : isAndroid ? 'android' : 'desktop').hidden = false;
+    if (isIOS && !isSafari) document.getElementById('safari-warning').hidden = false;
+    if (installPrompt) document.getElementById('android-hint').textContent = '버튼을 누르면 설치 창이 열립니다.';
+
+    document.getElementById('install-button').addEventListener('click', async () => {
+      const hint = document.getElementById('android-hint');
+      if (!installPrompt) {
+        hint.textContent = 'Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요. 이미 설치했다면 홈 화면의 MHSE 아이콘을 눌러주세요.';
+        return;
+      }
+      const pending = installPrompt;
+      installPrompt = null;
+      try {
+        await pending.prompt();
+        const choice = await pending.userChoice;
+        hint.textContent = choice.outcome === 'accepted' ? '설치가 완료되면 홈 화면의 MHSE 아이콘을 눌러주세요.' : '설치를 취소했습니다. Chrome 메뉴(⋮)에서도 설치할 수 있습니다.';
+      } catch {
+        hint.textContent = 'Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요.';
+      }
+    });
+    window.addEventListener('appinstalled', () => {
+      installPrompt = null;
+      document.getElementById('android-hint').textContent = '설치되었습니다. 홈 화면의 MHSE 아이콘을 눌러주세요.';
+    });
+
+    document.getElementById('copy-button').addEventListener('click', async () => {
+      const status = document.getElementById('copy-status');
+      const url = location.href;
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('clipboard unavailable');
+        await navigator.clipboard.writeText(url);
+        status.textContent = '주소를 복사했습니다. Safari에서 붙여넣으세요.';
+      } catch {
+        const input = document.createElement('textarea');
+        input.value = url;
+        input.setAttribute('readonly', '');
+        input.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+        document.body.appendChild(input);
+        input.focus();
+        input.select();
+        input.setSelectionRange(0, url.length);
+        let copied = false;
+        try { copied = document.execCommand('copy'); } catch { /* Show the URL below. */ }
+        input.remove();
+        status.textContent = copied ? '주소를 복사했습니다. Safari에서 붙여넣으세요.' : '주소를 길게 눌러 복사하세요: ' + url;
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js', {scope:'./'}).catch(() => {
+        if (isAndroid) document.getElementById('android-hint').textContent = '설치 준비에 실패했습니다. 새로고침하거나 Chrome 메뉴(⋮) → 홈 화면에 추가를 사용하세요.';
+      });
+    }
+  </script>
+</body>
+</html>
