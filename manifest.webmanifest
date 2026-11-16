@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "MHSE",
-  "short_name": "MHSE",
+  "name": "현대위아 HSE",
+  "short_name": "현대위아 HSE",
   "lang": "ko",
   "start_url": "launch.html",
   "scope": "./",
   "display": "standalone",
-  "theme_color": "#12365b",
-  "background_color": "#12365b",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
   "icons": [
     {
       "src": "icons/icon-192.png",

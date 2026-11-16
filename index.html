@@ -3,48 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#12365b">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="MHSE">
+  <meta name="apple-mobile-web-app-title" content="현대위아 HSE">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <title>MHSE · 홈 화면에 추가</title>
+  <title>현대위아 HSE</title>
   <style>
     :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; color: #172b42; background: #f2f5f9; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); }
-    main { width: 100%; max-width: 420px; background: #fff; padding: 32px 26px 24px; border-radius: 26px; box-shadow: 0 12px 44px #12365b0d; }
+    body { margin: 0; min-height: 100vh; min-height: 100svh; display: flex; justify-content: center; align-items: flex-start; padding: max(20px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom)); }
+    main { width: 100%; max-width: 420px; background: #fff; padding: 26px 24px 22px; border-radius: 24px; box-shadow: 0 12px 44px #12365b0d; }
     header { text-align: center; }
-    .app-icon { width: 80px; height: 80px; border-radius: 20px; }
-    .eyebrow { color: #586c81; font-size: 12px; letter-spacing: .12em; margin: 18px 0 8px; }
-    h1 { font-size: 25px; margin: 0 0 12px; letter-spacing: -.06em; }
-    p { font-size: 15px; line-height: 1.7; margin: 10px 0; }
-    .intro { color: #586c81; }
-    section { margin-top: 26px; }
-    h2 { font-size: 17px; margin: 0 0 12px; }
-    button, .primary { display: block; width: 100%; border: 0; border-radius: 12px; padding: 15px 12px; background: #12365b; color: #fff; font: inherit; font-weight: 700; text-align: center; cursor: pointer; text-decoration: none; }
+    .app-icon { display: block; width: 88px; height: 88px; margin: 0 auto 14px; border: 1px solid #e8edf3; border-radius: 20px; background: #fff; }
+    h1 { font-size: 25px; margin: 0 0 10px; letter-spacing: -.04em; }
+    p { font-size: 15px; line-height: 1.65; margin: 10px 0; }
+    .intro, .hint { color: #586c81; }
+    button { display: block; width: 100%; border: 0; border-radius: 12px; padding: 16px 12px; background: #12365b; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    #install-button { margin-top: 22px; min-height: 56px; font-size: 19px; }
     button:focus-visible, a:focus-visible { outline: 3px solid #4588d2; outline-offset: 4px; }
-    .steps { padding-left: 23px; font-size: 15px; line-height: 1.8; margin: 10px 0; }
-    .steps li { padding-left: 4px; margin: 8px 0; }
-    .hint { color: #586c81; font-size: 13px; }
-    .notice { background: #fff5df; color: #684919; border-radius: 12px; padding: 14px; margin-bottom: 18px; }
-    .notice button { margin-top: 12px; background: #fff; color: #684919; border: 1px solid #dacba9; }
-    .status { font-size: 13px; color: #586c81; overflow-wrap: anywhere; }
-    footer { margin-top: 26px; padding-top: 20px; border-top: 1px solid #e8edf3; text-align: center; }
+    .hint, .status { font-size: 13px; }
+    .status { overflow-wrap: anywhere; }
+    footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8edf3; text-align: center; }
     a { color: #12365b; text-underline-offset: 4px; }
     footer a { font-size: 14px; }
     [hidden] { display: none !important; }
-    @media (max-width: 360px) { main { padding: 24px 20px; } h1 { font-size: 23px; } }
+    .overlay { position: fixed; inset: 0; z-index: 10; background: #172b4270; display: flex; align-items: flex-end; justify-content: center; }
+    .sheet { position: relative; width: 100%; max-width: 460px; max-height: calc(100svh - 16px); overflow-y: auto; background: #fff; border-radius: 24px 24px 0 0; padding: 20px 24px max(20px, env(safe-area-inset-bottom)); box-shadow: 0 -8px 40px #12365b26; }
+    .sheet h2 { font-size: 20px; margin: 2px 42px 18px 0; }
+    .close { position: absolute; right: 14px; top: 14px; width: 36px; height: 36px; padding: 0; color: #586c81; background: #f2f5f9; font-size: 24px; }
+    .preview { display: flex; align-items: center; gap: 14px; margin: 12px 0 18px; }
+    .preview img { width: 64px; height: 64px; border: 1px solid #e8edf3; border-radius: 15px; }
+    .steps { list-style: none; padding: 0; margin: 0; }
+    .steps li { display: flex; align-items: center; gap: 10px; min-height: 46px; font-size: 15px; }
+    .step-number { color: #12365b; font-size: 23px; }
+    .share-icon { width: 24px; height: 28px; color: #12365b; vertical-align: middle; flex-shrink: 0; }
+    .share-pointer { text-align: center; color: #12365b; padding-top: 10px; }
+    .share-pointer span { display: block; font-size: 12px; }
+    .share-pointer svg { width: 32px; height: 36px; animation: point-down 1s ease-in-out infinite; }
+    @keyframes point-down { 0%, 100% { transform: translateY(-4px); } 50% { transform: translateY(5px); } }
+    @media (prefers-reduced-motion: reduce) { .share-pointer svg { animation: none; } }
+    @media (max-height: 600px) { body { padding-top: max(12px, env(safe-area-inset-top)); } main { padding-top: 18px; } .app-icon { width: 72px; height: 72px; margin-bottom: 10px; } .sheet { padding-top: 14px; } .preview { margin: 8px 0; } .steps li { min-height: 40px; } }
+    @media (max-width: 360px) { main { padding-left: 18px; padding-right: 18px; } h1 { font-size: 23px; } .sheet { padding-left: 18px; padding-right: 18px; } }
   </style>
   <script>
-    let installPrompt = null;
+    let deferredPrompt = null;
+    let installWaiting = false;
+    let installBusy = false;
+    let installed = false;
+    let waitTimer = null;
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault();
-      installPrompt = event;
-      const hint = document.getElementById('android-hint');
-      if (hint) hint.textContent = '버튼을 누르면 설치 창이 열립니다.';
+      deferredPrompt = event;
+      if (installWaiting) {
+        installWaiting = false;
+        clearTimeout(waitTimer);
+        requestInstall();
+      }
+    });
+    window.addEventListener('appinstalled', () => {
+      installed = true;
+      deferredPrompt = null;
+      installWaiting = false;
+      clearTimeout(waitTimer);
+      showInstalled();
     });
     if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
       location.replace('launch.html');
@@ -54,98 +78,166 @@
 <body>
   <main>
     <header>
-      <img class="app-icon" src="icons/icon-192.png" width="80" height="80" alt="MHSE 앱 아이콘">
-      <p class="eyebrow">MOBILE HSE</p>
-      <h1>MHSE를 홈 화면에 추가</h1>
-      <p class="intro">홈 화면의 아이콘을 눌러<br>모바일 HSE에 바로 접속하세요.</p>
+      <img class="app-icon" src="icons/icon-192.png" width="88" height="88" alt="현대위아 HSE 앱 아이콘">
+      <h1>현대위아 HSE</h1>
+      <p class="intro">홈 화면에 추가하고<br>아이콘 한 번으로 바로 접속하세요.</p>
     </header>
-
-    <section id="android" hidden aria-labelledby="android-title">
-      <h2 id="android-title">Android 설치 안내</h2>
-      <button id="install-button" type="button">앱 설치</button>
-      <p id="android-hint" class="hint" aria-live="polite">설치 창이 열리지 않으면 Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요. 이미 설치했다면 홈 화면의 MHSE 아이콘을 눌러주세요.</p>
-    </section>
-
-    <section id="ios" hidden aria-labelledby="ios-title">
-      <h2 id="ios-title">iPhone / iPad 설치 안내</h2>
-      <div id="safari-warning" class="notice" hidden>
-        <p><strong>Safari로 열어주세요.</strong><br>아래 버튼으로 주소를 복사한 뒤 Safari 주소창에 붙여넣으세요.</p>
-        <button id="copy-button" type="button">현재 URL 복사</button>
-        <p id="copy-status" class="status" role="status"></p>
-      </div>
-      <ol class="steps">
-        <li>Safari에서 <strong>공유 버튼</strong> (네모 위 화살표)을 누르세요.</li>
-        <li><strong>홈 화면에 추가</strong>를 선택하세요.</li>
-        <li>이름이 <strong>MHSE</strong>인지 확인하고 <strong>추가</strong>를 누르세요.</li>
-      </ol>
-      <p class="hint">메뉴가 보이지 않으면 공유 메뉴를 아래로 스크롤하세요.</p>
-    </section>
-
-    <section id="desktop" hidden aria-labelledby="desktop-title">
-      <h2 id="desktop-title">휴대폰에서 설치하세요</h2>
-      <p class="intro">휴대폰 카메라로 설치 안내 QR을 찍으면 기기에 맞는 설치 방법을 안내합니다.</p>
-      <a class="primary" href="https://mhse.wia.co.kr/">바로 접속</a>
-    </section>
-
-    <noscript><p>Android: Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가). iPhone / iPad: Safari → 공유 버튼 → 홈 화면에 추가 → 이름을 MHSE로 지정하세요.</p></noscript>
+    <button id="install-button" type="button">앱 설치</button>
+    <p id="install-status" class="hint" role="status" aria-live="polite">기기에 맞는 설치 방법을 안내합니다.</p>
+    <noscript><p>Android: Chrome 메뉴(⋮) → 앱 설치/홈 화면에 추가.<br>iPhone / iPad: Safari → 공유 → 홈 화면에 추가 → 추가. 앱 이름은 현대위아 HSE입니다.</p></noscript>
     <footer><a href="https://mhse.wia.co.kr/">설치 없이 바로 접속</a></footer>
   </main>
+
+  <div id="ios-overlay" class="overlay" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" tabindex="-1">
+      <button id="close-sheet" class="close" type="button" aria-label="설치 안내 닫기">×</button>
+      <h2 id="sheet-title">홈 화면에 추가</h2>
+      <div class="preview">
+        <img src="icons/icon-192.png" width="64" height="64" alt="설치될 현대위아 HSE 아이콘">
+        <strong>현대위아 HSE</strong>
+      </div>
+      <div id="safari-warning" hidden>
+        <p><strong>Safari로 열어주세요.</strong><br>주소를 복사한 뒤 Safari 주소창에 붙여넣으세요.</p>
+        <button id="copy-button" type="button">URL 복사</button>
+        <p id="copy-status" class="status" role="status"></p>
+      </div>
+      <div id="safari-steps" hidden>
+        <ol class="steps">
+          <li><span class="step-number">①</span><svg class="share-icon" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.8" role="img" aria-label="공유 아이콘"><path d="M12 18V2m-5 5 5-5 5 5M7 11H3v14h18V11h-4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>공유 아이콘</strong>을 탭하세요.</span></li>
+          <li><span class="step-number">②</span><span><strong>홈 화면에 추가</strong>를 탭하세요.</span></li>
+          <li><span class="step-number">③</span><span>우측 상단 <strong>추가</strong>를 탭하세요.</span></li>
+        </ol>
+        <p class="hint">항목이 안 보이면 공유 메뉴를 아래로 스크롤하세요.<br>공유 버튼 위치는 Safari 설정에 따라 다를 수 있습니다.</p>
+        <div class="share-pointer" aria-hidden="true">
+          <span>Safari 하단의 공유 버튼을 눌러주세요</span>
+          <svg viewBox="0 0 32 36" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 4v26M6 20l10 10 10-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script>
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 0);
     const isAndroid = /Android/i.test(ua);
     const isSafari = /Safari/i.test(ua) && /Version\//i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA|FBAN|FBAV|Instagram|KAKAOTALK|NAVER|Line\//i.test(ua);
-    document.getElementById(isIOS ? 'ios' : isAndroid ? 'android' : 'desktop').hidden = false;
-    if (isIOS && !isSafari) document.getElementById('safari-warning').hidden = false;
-    if (installPrompt) document.getElementById('android-hint').textContent = '버튼을 누르면 설치 창이 열립니다.';
+    const button = document.getElementById('install-button');
+    const status = document.getElementById('install-status');
+    const overlay = document.getElementById('ios-overlay');
+    const sheet = overlay.querySelector('.sheet');
+    const closeButton = document.getElementById('close-sheet');
+    const copyButton = document.getElementById('copy-button');
+    const fallback = 'Chrome 메뉴(⋮) → “앱 설치” 또는 “홈 화면에 추가”를 선택하세요. 이미 설치했다면 홈 화면의 현대위아 HSE 아이콘을 눌러주세요.';
 
-    document.getElementById('install-button').addEventListener('click', async () => {
-      const hint = document.getElementById('android-hint');
-      if (!installPrompt) {
-        hint.textContent = 'Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요. 이미 설치했다면 홈 화면의 MHSE 아이콘을 눌러주세요.';
-        return;
-      }
-      const pending = installPrompt;
-      installPrompt = null;
+    function showInstalled() {
+      const target = document.getElementById('install-status');
+      if (target) target.textContent = "설치 완료! 홈 화면의 '현대위아 HSE' 아이콘을 눌러주세요";
+    }
+
+    async function requestInstall() {
+      if (!deferredPrompt || installBusy || installed) return;
+      const pending = deferredPrompt;
+      deferredPrompt = null;
+      installBusy = true;
+      installWaiting = false;
+      clearTimeout(waitTimer);
       try {
+        // Call prompt synchronously before the first await to preserve the click gesture.
         await pending.prompt();
         const choice = await pending.userChoice;
-        hint.textContent = choice.outcome === 'accepted' ? '설치가 완료되면 홈 화면의 MHSE 아이콘을 눌러주세요.' : '설치를 취소했습니다. Chrome 메뉴(⋮)에서도 설치할 수 있습니다.';
+        if (choice.outcome === 'accepted' || installed) {
+          installed = true;
+          showInstalled();
+        } else {
+          status.textContent = '설치를 취소했습니다. 앱 설치 버튼으로 다시 시도하거나 ' + fallback;
+        }
       } catch {
-        hint.textContent = 'Chrome 메뉴(⋮) → 앱 설치(또는 홈 화면에 추가)를 선택하세요.';
+        if (!installed) status.textContent = fallback;
+      } finally {
+        installBusy = false;
       }
-    });
-    window.addEventListener('appinstalled', () => {
-      installPrompt = null;
-      document.getElementById('android-hint').textContent = '설치되었습니다. 홈 화면의 MHSE 아이콘을 눌러주세요.';
+    }
+
+    function openSheet() {
+      document.getElementById('safari-warning').hidden = isSafari;
+      document.getElementById('safari-steps').hidden = !isSafari;
+      document.getElementById('sheet-title').textContent = isSafari ? '홈 화면에 추가' : 'Safari에서 설치하기';
+      button.setAttribute('aria-expanded', 'true');
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      sheet.focus({preventScroll: true});
+    }
+
+    function closeSheet() {
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+      button.setAttribute('aria-expanded', 'false');
+      button.focus({preventScroll: true});
+    }
+
+    if (isIOS) {
+      button.setAttribute('aria-haspopup', 'dialog');
+      button.setAttribute('aria-controls', 'ios-overlay');
+      button.setAttribute('aria-expanded', 'false');
+      status.textContent = isSafari ? '버튼을 누르면 홈 화면 추가 방법이 열립니다.' : '버튼을 누르면 Safari에서 설치하는 방법이 열립니다.';
+    } else {
+      status.textContent = isAndroid ? '버튼을 눌러 홈 화면에 추가하세요.' : '버튼을 눌러 설치하세요. 휴대폰에서도 이 주소를 열어 설치할 수 있습니다.';
+    }
+    if (installed) showInstalled();
+
+    button.addEventListener('click', () => {
+      if (isIOS) { openSheet(); return; }
+      if (installed) { showInstalled(); return; }
+      if (installBusy) return;
+      if (deferredPrompt) { requestInstall(); return; }
+      if (installWaiting) return;
+      installWaiting = true;
+      status.textContent = '설치 창을 확인하고 있습니다. 잠시 뒤 설치 창 또는 메뉴 안내가 표시됩니다.';
+      waitTimer = setTimeout(() => {
+        installWaiting = false;
+        if (!installed) status.textContent = fallback;
+      }, 3000);
     });
 
-    document.getElementById('copy-button').addEventListener('click', async () => {
-      const status = document.getElementById('copy-status');
+    closeButton.addEventListener('click', closeSheet);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) closeSheet(); });
+    document.addEventListener('keydown', (event) => {
+      if (overlay.hidden) return;
+      if (event.key === 'Escape') closeSheet();
+      if (event.key !== 'Tab') return;
+      const last = isSafari ? closeButton : copyButton;
+      if (event.shiftKey && (document.activeElement === closeButton || document.activeElement === sheet)) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); closeButton.focus();
+      }
+    });
+
+    copyButton.addEventListener('click', async () => {
+      const copyStatus = document.getElementById('copy-status');
       const url = location.href;
       try {
         if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('clipboard unavailable');
         await navigator.clipboard.writeText(url);
-        status.textContent = '주소를 복사했습니다. Safari에서 붙여넣으세요.';
+        copyStatus.textContent = '주소를 복사했습니다. Safari에서 붙여넣으세요.';
       } catch {
         const input = document.createElement('textarea');
         input.value = url;
         input.setAttribute('readonly', '');
         input.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
-        document.body.appendChild(input);
-        input.focus();
-        input.select();
-        input.setSelectionRange(0, url.length);
+        sheet.appendChild(input);
+        input.focus(); input.select(); input.setSelectionRange(0, url.length);
         let copied = false;
-        try { copied = document.execCommand('copy'); } catch { /* Show the URL below. */ }
+        try { copied = document.execCommand('copy'); } catch { /* Display the URL for manual copying. */ }
         input.remove();
-        status.textContent = copied ? '주소를 복사했습니다. Safari에서 붙여넣으세요.' : '주소를 길게 눌러 복사하세요: ' + url;
+        copyButton.focus({preventScroll: true});
+        copyStatus.textContent = copied ? '주소를 복사했습니다. Safari에서 붙여넣으세요.' : '주소를 길게 눌러 복사하세요: ' + url;
       }
     });
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js', {scope:'./'}).catch(() => {
-        if (isAndroid) document.getElementById('android-hint').textContent = '설치 준비에 실패했습니다. 새로고침하거나 Chrome 메뉴(⋮) → 홈 화면에 추가를 사용하세요.';
+      navigator.serviceWorker.register('sw.js', {scope: './'}).catch(() => {
+        if (!isIOS && !installed && !installBusy && !installWaiting) status.textContent = fallback;
       });
     }
   </script>
