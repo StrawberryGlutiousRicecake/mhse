@@ -50,6 +50,7 @@
     button:disabled { cursor: wait; opacity: .75; }
     .chrome-banner { margin-bottom: 22px; padding: 14px; border-radius: 14px; background: #edf4fc; }
     .chrome-banner p { margin: 0 0 10px; font-weight: 700; }
+    .chrome-banner .chrome-tip { font-weight: 400; font-size: 13px; color: #586c81; line-height: 1.5; }
     .chrome-copy { margin-top: 10px; background: #fff; color: #12365b; border: 1px solid #12365b; font-size: 14px; }
     .chrome-open { display: block; padding: 16px 12px; border-radius: 12px; background: #12365b; color: #fff; text-align: center; text-decoration: none; font-weight: 700; }
     .hint, .status { font-size: 13px; }
@@ -103,7 +104,8 @@
   <main>
     <aside id="chrome-banner" class="chrome-banner" hidden>
       <p>Chrome에서 열면 바로 설치됩니다</p>
-      <a id="chrome-open" class="chrome-open" href="intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end">Chrome에서 열기</a>
+      <p class="chrome-tip">Chrome에 이 페이지 대신 구글 홈 화면이 뜨면, 주소창을 길게 누르거나 눌러서 <strong>붙여넣기</strong>(복사한 링크)를 하세요. 주소는 자동으로 복사됩니다.</p>
+      <a id="chrome-open" class="chrome-open" href="intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end">Chrome에서 열기</a>
       <button id="chrome-copy" type="button" class="chrome-copy">주소 복사 → Chrome 주소창에 붙여넣기</button>
       <p id="chrome-copy-status" class="status" role="status"></p>
     </aside>
@@ -163,7 +165,7 @@
     // Chrome이 아닌 안드로이드 브라우저에서는 버튼(사용자 탭)으로만 Chrome 전환. 자동 전환은 URL 없이 Chrome만 열리는 문제가 있어 제거.
     // Chrome이 없어 되돌아온 경우(?nochrome=1)에는 반복하지 않고 현재 브라우저로 설치를 안내.
     const noChrome = /[?&]nochrome=1/.test(location.search);
-    const CHROME_INTENT = 'intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end';
+    const CHROME_INTENT = 'intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end';
     let installWaiting = false;
     let installBusy = false;
     let waitTimer = null;
@@ -198,7 +200,7 @@
     async function showFallback(attempt) {
       if (isAndroid && !isChrome && !noChrome) {
         chromeBanner.hidden = false;
-        status.textContent = 'Chrome에서 열기 버튼을 누르세요. Chrome에 페이지가 안 뜨면 주소를 복사해 Chrome 주소창에 붙여넣으세요.';
+        status.textContent = 'Chrome에서 열기 버튼을 누르세요. 구글 홈 화면이 뜨면 주소창에 붙여넣으세요.';
         return;
       }
       if (navigator.getInstalledRelatedApps) {
@@ -296,7 +298,7 @@
 
     button.addEventListener('click', () => {
       if (isIOS) { openSheet(); return; }
-      if (isAndroid && !isChrome && !noChrome) { location.href = CHROME_INTENT; return; }
+      if (isAndroid && !isChrome && !noChrome) { copyUrlSilently(); location.href = CHROME_INTENT; return; }
       if (window.__appInstalled) { showInstalled(); return; }
       if (installBusy) return;
       if (window.__deferredInstall) { requestInstall(); return; }
@@ -326,6 +328,17 @@
         event.preventDefault(); closeButton.focus();
       }
     });
+
+    // Chrome 전환 시 주소가 전달되지 않는 기기를 위해, 전환 직전에 주소를 클립보드에 복사해 둔다.
+    function copyUrlSilently() {
+      const url = location.origin + location.pathname;
+      try { navigator.clipboard.writeText(url).catch(() => {}); } catch {}
+      try {
+        const t = document.createElement('textarea'); t.value = url; t.style.position = 'fixed'; t.style.opacity = '0';
+        document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove();
+      } catch {}
+    }
+    document.getElementById('chrome-open').addEventListener('click', copyUrlSilently);
 
     document.getElementById('chrome-copy').addEventListener('click', async () => {
       const out = document.getElementById('chrome-copy-status');
