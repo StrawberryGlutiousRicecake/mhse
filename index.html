@@ -79,6 +79,16 @@
     @media (prefers-reduced-motion: reduce) { .share-pointer svg { animation: none; } }
     @media (max-height: 600px) { body { padding-top: max(12px, env(safe-area-inset-top)); } main { padding-top: 18px; } .app-icon { width: 72px; height: 72px; margin-bottom: 10px; } .sheet { padding-top: 14px; } .preview { margin: 8px 0; } .steps li { min-height: 40px; } }
     @media (max-width: 360px) { main { padding-left: 18px; padding-right: 18px; } h1 { font-size: 23px; } .sheet { padding-left: 18px; padding-right: 18px; } }
+    /* 공유 시트가 아래쪽을 가려도 5단계가 모두 보이도록 안내 카드를 컴팩트하게 */
+    .overlay { padding-top: max(10px, env(safe-area-inset-top)); }
+    .sheet { padding: 12px 16px; border-radius: 18px; }
+    .sheet h2 { font-size: 16px; margin: 2px 40px 6px 0; }
+    .close { right: 8px; top: 8px; width: 30px; height: 30px; font-size: 20px; }
+    .preview { display: none; }
+    .steps li { min-height: 32px; font-size: 14px; gap: 8px; }
+    .step-number { font-size: 19px; }
+    .share-icon { width: 20px; height: 24px; }
+    #safari-steps .hint { display: none; }
   </style>
 </head>
 <body>
@@ -142,8 +152,9 @@
     // Chrome이 아닌 안드로이드 브라우저로 열리면 Chrome으로 자동 전환 시도.
     // Chrome이 없어 되돌아온 경우(?nochrome=1)에는 반복하지 않고 현재 브라우저로 설치를 안내.
     const noChrome = /[?&]nochrome=1/.test(location.search);
+    const CHROME_INTENT = 'intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end';
     if (isAndroid && !isChrome && !noChrome) {
-      location.replace('intent://strawberryglutiousricecake.github.io/mhse/#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fstrawberryglutiousricecake.github.io%2Fmhse%2F%3Fnochrome%3D1;end');
+      location.replace(CHROME_INTENT);
     }
     let installWaiting = false;
     let installBusy = false;
@@ -249,7 +260,7 @@
       document.getElementById('safari-warning').hidden = isSafari;
       document.getElementById('safari-steps').hidden = !isSafari;
       safariPointer.hidden = !isSafari;
-      document.getElementById('sheet-title').textContent = isSafari ? '홈 화면에 추가' : 'Safari에서 설치하기';
+      document.getElementById('sheet-title').textContent = isSafari ? '“현대위아 HSE” 홈 화면에 추가' : 'Safari에서 설치하기';
       button.setAttribute('aria-expanded', 'true');
       overlay.hidden = false;
       document.body.style.overflow = 'hidden';
@@ -270,13 +281,14 @@
       button.setAttribute('aria-expanded', 'false');
       status.textContent = isSafari ? '버튼을 누르면 홈 화면 추가 방법이 열립니다.' : '버튼을 누르면 Safari에서 설치하는 방법이 열립니다.';
     } else {
-      status.textContent = isAndroid ? '버튼을 눌러 홈 화면에 추가하세요.' : '버튼을 눌러 설치하세요. 휴대폰에서도 이 주소를 열어 설치할 수 있습니다.';
+      status.textContent = isAndroid ? (noChrome ? '설치 중 “안전하지 않은 앱 차단됨”이 나오면 “무시하고 설치하기”를 눌러주세요.' : '버튼을 눌러 홈 화면에 추가하세요.') : '버튼을 눌러 설치하세요. 휴대폰에서도 이 주소를 열어 설치할 수 있습니다.';
       chromeBanner.hidden = !(isAndroid && !isChrome && !noChrome);
     }
     if (window.__appInstalled) showInstalled();
 
     button.addEventListener('click', () => {
       if (isIOS) { openSheet(); return; }
+      if (isAndroid && !isChrome && !noChrome) { location.href = CHROME_INTENT; return; }
       if (window.__appInstalled) { showInstalled(); return; }
       if (installBusy) return;
       if (window.__deferredInstall) { requestInstall(); return; }
